@@ -1,4 +1,6 @@
 import sys
+
+from PyQt5.QtWidgets import QAction, qApp
 from PyQt5.QtWidgets import QDesktopWidget
 from PyQt5.QtWidgets import QMessageBox
 
@@ -18,7 +20,7 @@ class Button(QPushButton):
         self.setText(text)
 
 
-class ShinyGui(QWidget):
+class ShinyGui(QMainWindow):
     def __init__(self):
         super().__init__()
 
@@ -28,12 +30,27 @@ class ShinyGui(QWidget):
         """ initialise the UI with the properties below"""
         w_width = 800
         w_height = 1000
-
         QToolTip.setFont(QFont('SansSerif', 10))
-
         self.setGeometry(400, 400, w_height, w_width)
         self.setWindowTitle('Shiny Pokemon Simulator')
         self.setWindowIcon(QIcon('res/pokeball_favicon.png'))
+
+
+        ### creates a menu bar at the top of the window with an option to quit on it
+        exitAction = QAction(QIcon('exit.png'), '&Exit', self)
+        exitAction.setShortcut('Ctrl+Q')
+        exitAction.setStatusTip('Exit application')
+        exitAction.triggered.connect(qApp.quit)
+
+        self.statusBar()
+
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(exitAction)
+        ###
+
+        ### show's a status bar at the bottom of the screen
+        self.statusBar().showMessage('Ready')
 
         btn = QPushButton('Button', self)
         btn.move(50, 50)
