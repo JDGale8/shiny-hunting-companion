@@ -32,3 +32,8 @@ Once they have found a shiny as well, the app should keep track of these by ungr
 a list of total found shinies.
 
 Maybe I could make a verification process and a leaderboard. Who knows!
+
+### IDEAS ###
+
+Here I'm just going to write down ideas so they're somewhere
+* Ability to change the favicon to your favourite pokemon

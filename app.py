@@ -49,6 +49,9 @@ class ShinyGui(QMainWindow):
         fileMenu.addAction(exitAction)
         ###
 
+        self.toolbar = self.addToolBar('Exit')
+        self.toolbar.addAction(exitAction)
+
         ### show's a status bar at the bottom of the screen
         self.statusBar().showMessage('Ready')
 
