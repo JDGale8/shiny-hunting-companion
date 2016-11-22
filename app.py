@@ -4,6 +4,17 @@ from PyQt5 import Qt
 from PyQt5.QtWidgets import (QWidget, QToolTip, QPushButton, QApplication)
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QRect
+
+
+class Button(QPushButton):
+
+    def __init__(self, parent, text='button'):
+        super(Button, self).__init__(parent)
+
+        self.setAcceptDrops(True)
+        self.setGeometry(QRect(90, 90, 61, 51))
+        self.setText(text)
 
 
 class ShinyGui(QWidget):
@@ -28,16 +39,12 @@ class ShinyGui(QWidget):
         btn.resize(btn.sizeHint())
         btn.setToolTip('This is a <b>button</b>')
 
-        quit_button = QPushButton('Quit', self)
-
+        quit_button = Button(self, 'Quit')
         quit_button.clicked.connect(QCoreApplication.instance().quit)
-        quit_button.move(50, 100)
 
-        # change background colour, requires a pallete object
-        p = self.palette()
-        p.setColor(self.backgroundRole, Qt.red)
 
         self.show()
+
 
 
 if __name__ == '__main__':
