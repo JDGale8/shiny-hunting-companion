@@ -1,7 +1,8 @@
 import sys
-from PyQt5 import Qt
+from PyQt5.QtWidgets import QDesktopWidget
+from PyQt5.QtWidgets import QMessageBox
 
-from PyQt5.QtWidgets import (QWidget, QToolTip, QPushButton, QApplication)
+from PyQt5.QtWidgets import (QWidget, QToolTip, QPushButton, QApplication, QMainWindow)
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtCore import QRect
@@ -44,6 +45,17 @@ class ShinyGui(QWidget):
 
 
         self.show()
+
+    def closeEvent(self, event):
+        """ automatically called when the window is closed, overrides the normal functoinality"""
+
+        reply = QMessageBox.question(self, 'Quit', 'Are you sure you want to quit?',
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
 
 
 
