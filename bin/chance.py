@@ -1,6 +1,13 @@
+from scipy.misc import comb
+
+
 def cum_bin_choice(c, n, m=1):
     """ given a chance c, and number of trials n, returns chance a single success should have occurred"""
-    return 1 - (1 * c ** (m-1) * ((1 - c)**n))
+    cum_chance = 0
+    for i in range(m):
+        cum_chance += comb(n, i)*((c ** i) * ((1 - c)**(n-i)))
+
+    return 1 - cum_chance
 
 
 def random_encounter(n, successes=1, generation=7, friend_safari=False, shiny_charm=False):

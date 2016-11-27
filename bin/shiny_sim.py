@@ -1,14 +1,18 @@
 import random
-import chance as ch
+from bin import chance as ch
 
 
-class Simulate:
+def plural(number):
+    return '' if number == 1 else 's'
+
+
+class Simulation:
 
     def __init__(self):
         self.shiny_charm = False
         self.masuda = False
 
-    def shiny_eggs(self, n_eggs):
+    def shiny_eggs(self, n_eggs, successes=1):
         masuda = True
 
         shiny_chance = (1 + 5*masuda + self.shiny_charm)/4096
@@ -19,12 +23,19 @@ class Simulate:
             if chance < shiny_chance:
                 shiny_eggs.append(i)
 
-        print("In {} eggs you received {} shiny pokemon. They were in the following eggs: {}"
-              .format(n_eggs, len(shiny_eggs), shiny_eggs))
+        cum_chance = ch.egg(n_eggs, masuda=masuda, shiny_charm=self.shiny_charm, successes=successes)
+
+        print("In {} eggs you received {} shiny pokemon.".format(n_eggs, len(shiny_eggs)))
+        if len(shiny_eggs) >0:
+            print("They were in the following eggs: {}. ".format(shiny_eggs))
+        print("There was a {0:.2f}% chance of finding {1} shiny egg{2}".format(cum_chance*100, successes, plural(successes)))
 
     @staticmethod
-    def shiny_starter(no_of_sr):
-        shiny_chance = 3/4096
+    def shiny_starter(no_of_sr, generation=7):
+        if generation == 7:
+            shiny_chance = 1/4096
+        else:
+            shiny_chance = 3/4096
 
         shiny_pokemon = []
 
