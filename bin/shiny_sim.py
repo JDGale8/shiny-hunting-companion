@@ -1,4 +1,5 @@
 import random
+import chance as ch
 
 
 class Simulate:
