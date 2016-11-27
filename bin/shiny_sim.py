@@ -79,4 +79,4 @@ class Simulate:
                 shiny_encounters.append(i)
 
         print("In {} encounters you received {} shiny pokemon. They were in the following encounters: {}"
-              .format(number_of_encounters, len(shiny_encounters),shiny_encounters))
+              .format(number_of_encounters, len(shiny_encounters), shiny_encounters))

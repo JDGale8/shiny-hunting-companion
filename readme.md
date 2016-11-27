@@ -37,3 +37,6 @@ Maybe I could make a verification process and a leaderboard. Who knows!
 
 Here I'm just going to write down ideas so they're somewhere
 * Ability to change the favicon to your favourite pokemon
+
+* Shiny hunting Guides - For example:
+http://bulbahandbook.bulbagarden.net/pokemonsunmoon/guide/sos-battle-chaining
