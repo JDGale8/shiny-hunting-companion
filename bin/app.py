@@ -21,7 +21,7 @@ class TestGUI(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.counter = 0  # in the future - have this load from a json file
+        self.fishing_counter = 0  # in the future - have this load from a json file
         self.chance = 0
         self.initUI()
 
@@ -30,54 +30,61 @@ class TestGUI(QWidget):
         self.setGeometry(400, 400, 600, 400)
         self.setWindowTitle('Shiny Pokemon Simulator')
         self.setWindowIcon(QIcon('../res/pokeball_favicon.png'))
-        self.counter_disp = QTextEdit(str(self.counter))
-        #validator = QRegExpValidator(self.counter_disp)
 
-        self.counter_disp.textChanged.connect(self.set_chain)
+        """ FISHING PROBABLITIES """
+        # set display for chain counter
+        self.counter_disp = QTextEdit(str(self.fishing_counter))
+        self.counter_disp.textChanged.connect(self.set_chain)  # if it changes, change chain too
 
-
+        # set titles and info
+        self.fishing_title = QLabel("Chain Fishing")
         self.counter_label = QLabel("counter")
         self.chance_lb = QLabel("Chance to have found a shiny by now:")
         self.chance_amount = QTextEdit("{:.2f}".format(self.chance))
         self.chance_amount.setReadOnly(True)
 
         self.inc_btn = QPushButton("+")
-        self.inc_btn.clicked.connect(self.increase_counter)
+        self.inc_btn.clicked.connect(self.increase_fishing_counter)
 
         grid = QGridLayout()
         grid.setSpacing(5)
 
-        grid.addWidget(self.counter_label, 0, 0)
-        grid.addWidget(self.counter_disp, 0,1)
-        grid.addWidget(self.inc_btn, 0,2)
-        grid.addWidget(self.chance_lb, 1,1)
-        grid.addWidget(self.chance_amount, 1,2)
+        # grid information for chain fishing widget
+        grid.addWidget(self.fishing_title, 0, 0)
+        grid.addWidget(self.counter_label, 1, 0)
+        grid.addWidget(self.counter_disp, 1, 1)
+        grid.addWidget(self.inc_btn, 1, 2)
+        grid.addWidget(self.chance_lb, 2, 1)
+        grid.addWidget(self.chance_amount, 2, 2)
 
         self.update_chance()
 
         self.setLayout(grid)
         self.show()
 
-    def increase_counter(self):
-        self.counter += 1
-        self.counter_disp.setText(str(self.counter))
+    def increase_fishing_counter(self):
+        self.fishing_counter += 1
+        self.counter_disp.setText(str(self.fishing_counter))
         self.update_chance()
 
-
         # should also then save this counter value to a json file
-        #QApplication.processEvents()  # update gui for pyqt
 
     def update_chance(self):
 
-        chance = ch.fishing(self.counter)
+        chance = ch.fishing(self.fishing_counter)
         self.chance_amount.setText("{:.2f}%".format(chance * 100))
 
-        QApplication.processEvents()  # update gui for pyqt
+        #QApplication.processEvents()  # update gui for pyqt
 
     def set_chain(self):
-        self.counter = int(self.counter_disp.toPlainText())
+        entry = self.counter_disp.toPlainText()
+        try:
+            entry = int(entry)
+        except ValueError:
+            entry = 0
+
+        self.fishing_counter = entry
         self.update_chance()
-        QApplication.processEvents()  # update gui for pyqt
 
 
 if __name__ == '__main__':
