@@ -3,5 +3,5 @@ if __name__ == '__main__':
     from bin import app as GUI
 
     app = GUI.run()
-    instance = GUI.TestGUI()
+    instance = GUI.ShinyGUI()
     sys.exit(app.exec_())

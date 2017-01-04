@@ -1,5 +1,6 @@
 import random
-from bin import chance as ch
+
+from calc import chance as ch
 
 
 def plural(number):
