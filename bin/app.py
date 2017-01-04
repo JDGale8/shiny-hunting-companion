@@ -21,8 +21,8 @@ class TestGUI(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.fishing_counter = 0  # in the future - have this load from a json file
-        self.fishing_chance = 0
+        self.fish_counter = 0  # in the future - have this load from a json file
+        self.fish_chance = 0
         self.RE_counter = 0
         self.RE_chance = 0
         self.initUI()
@@ -33,79 +33,116 @@ class TestGUI(QWidget):
         self.setWindowTitle('Shiny Pokemon Simulator')
         self.setWindowIcon(QIcon('../res/pokeball_favicon.png'))
 
-        """ FISHING PROBABLITIES """
-        # set display for chain counter
-        self.counter_disp = QTextEdit(str(self.fishing_counter))
-        self.counter_disp.textChanged.connect(self.set_chain)  # if it changes, change chain too
+        self.fish_init()
+        self.RE_init()
 
-        # set titles and info for chain fishing
-        self.fishing_title = QLabel("Chain Fishing")
-        self.counter_label = QLabel("counter")
-        self.fishing_chance_lb = QLabel("Chance to have found a shiny by now:")
-        self.fishing_chance_amount = QTextEdit("{:.2f}".format(self.fishing_chance))
-        self.fishing_chance_amount.setReadOnly(True)
-
-        self.inc_btn_fish = QPushButton("+")
-        self.inc_btn_fish.clicked.connect(self.increase_fishing_counter)
-
-        # set titles and info for random encounters
-        RE_title = QLabel("Random Encounters")
-        RE_label = QLabel("Counter")
-        self.RE_chance_lb = QLabel("Chance for at least one shiny:")
-        self.RE_chance_amount = QTextEdit("{:.2f}".format(self.RE_chance))
-
-        self.inc_btn_RE = QPushButton("+")
-        self.inc_btn_RE.clicked.connect(self.increase_RE_counter)
+        """ GRIDS """
 
         grid = QGridLayout()
         grid.setSpacing(5)
 
-        # grid information for chain fishing widget
-        grid.addWidget(self.fishing_title, 0, 0)
-        grid.addWidget(self.counter_label, 1, 0)
-        grid.addWidget(self.counter_disp, 1, 1)
-        grid.addWidget(self.inc_btn_RE, 1, 2)
-        grid.addWidget(self.fishing_chance_lb, 2, 1)
-        grid.addWidget(self.fishing_chance_amount, 2, 2)
+        # set grid initial positions for relative movement
 
-        self.update_fishing_chance()
+        # CHAIN FISHING
+        grid.addWidget(self.fish_title, 0, 0)
+        grid.addWidget(self.fish_counter_label, 1, 0)
+        grid.addWidget(self.fish_counter_disp, 1, 1)
+        grid.addWidget(self.fish_inc_btn, 1, 2)
+        grid.addWidget(self.fish_chance_lb, 2, 1)
+        grid.addWidget(self.fish_chance_amount, 2, 2)
+
+        # RANDOM ENCOUNTERS
+
+        grid.addWidget(self.RE_title, 0, 0)
+        grid.addWidget(self.RE_counter_label, 1, 0)
+        grid.addWidget(self.RE_counter_disp, 1, 1)
+        grid.addWidget(self.RE_inc_btn, 1, 2)
+        grid.addWidget(self.RE_chance_lb, 2, 1)
+        grid.addWidget(self.RE_chance_amount, 2, 2)
+
+        self.fish_update_chance()
+        self.RE_update_chance()
 
         self.setLayout(grid)
         self.show()
 
-    def increase_fishing_counter(self):
-        self.fishing_counter += 1
-        self.counter_disp.setText(str(self.fishing_counter))
-        self.update_fishing_chance()
+    """ INITIALIZE ATTRIBUTES """
+
+    def fish_init(self):
+
+        """ FISHING PROBABLITIES """
+        # set display for chain counter
+        self.fish_counter_disp = QTextEdit(str(self.fish_counter))
+        self.fish_counter_disp.textChanged.connect(self.fish_set_chain)  # if it changes, change chain too
+
+        # set titles and info for chain fishing
+        self.fish_title = QLabel("Chain Fishing")
+        self.fish_counter_label = QLabel("counter")
+        self.fish_chance_lb = QLabel("Chance to have found a shiny by now:")
+        self.fish_chance_amount = QTextEdit("{:.2f}".format(self.fish_chance))
+        self.fish_chance_amount.setReadOnly(True)
+
+        self.fish_inc_btn = QPushButton("+")
+        self.fish_inc_btn.clicked.connect(self.fish_increase_counter)
+
+    def RE_init(self):
+        """ RANDOM ENCOUNTER PROBABLITIES """
+        # set display for chain counter
+        self.RE_counter_disp = QTextEdit(str(self.RE_counter))
+        self.RE_counter_disp.textChanged.connect(self.RE_set_chain)  # if it changes, change chain too
+
+        # set titles and info for random encounters
+        self.RE_title = QLabel("Random Encounters")
+        self.RE_counter_label = QLabel("Counter")
+        self.RE_chance_lb = QLabel("Chance for at least one shiny:")
+        self.RE_chance_amount = QTextEdit("{:.2f}".format(self.RE_chance))
+
+        self.RE_inc_btn = QPushButton("+")
+        self.RE_inc_btn.clicked.connect(self.RE_increase_counter)
+
+    def fish_increase_counter(self):
+        self.fish_counter += 1
+        self.fish_counter_disp.setText(str(self.fish_counter))
+        self.fish_update_chance()
 
         # should also then save this counter value to a json file
 
-    def increase_RE_counter(self):
-        self.RE_counter += 1
-        self.counter_disp.setText(str(self.RE_counter))
-        self.update_RE_chance()
+    def fish_update_chance(self):
 
-        # should also then save this counter value to a json file
+        chance = ch.fishing(self.fish_counter)
+        self.fish_chance_amount.setText("{:.2f}%".format(chance * 100))
 
-    def update_fishing_chance(self):
-
-        chance = ch.fishing(self.fishing_counter)
-        self.fishing_chance_amount.setText("{:.2f}%".format(chance * 100))
-
-    def update_RE_chance(self):
-
-        chance = ch.random_encounter(self.RE_counter)
-        self.RE_chance_amount.setText("{:.2f}%".format(chance * 100))
-
-    def set_chain(self):
-        entry = self.counter_disp.toPlainText()
+    def fish_set_chain(self):
+        entry = self.fish_counter_disp.toPlainText()
         try:
             entry = int(entry)
         except ValueError:
             entry = 0
 
-        self.fishing_counter = entry
-        self.update_fishing_chance()
+        self.fish_counter = entry
+        self.fish_update_chance()
+
+    def RE_set_chain(self):
+        entry = self.RE_counter_disp.toPlainText()
+        try:
+            entry = int(entry)
+        except ValueError:
+            entry = 0
+
+        self.RE_counter = entry
+        self.RE_update_chance()
+
+    def RE_increase_counter(self):
+        self.RE_counter += 1
+        self.fish_counter_disp.setText(str(self.RE_counter))
+        self.RE_update_chance()
+
+        # should also then save this counter value to a json file
+
+    def RE_update_chance(self):
+
+        chance = ch.random_encounter(self.RE_counter)
+        self.RE_chance_amount.setText("{:.2f}%".format(chance * 100))
 
 
 if __name__ == '__main__':
