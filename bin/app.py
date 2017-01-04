@@ -8,95 +8,101 @@ I want to have a single counter that when I click on it, it updates some text, a
 import sys
 
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QGridLayout
 from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5.QtWidgets import QSizePolicy
-from PyQt5.QtWidgets import QLabel
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtWidgets import QTextEdit
+from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QCheckBox
 
-import calc.chance as ch
 import ui.generate_ui as gen_ui
 
 
 class ShinyGUI(QWidget):
     def __init__(self):
         super().__init__()
-
-        self.fish_counter = 0  # in the future - have this load from a json file
-        self.fish_chance = 0
-        self.RE_counter = 0
-        self.RE_chance = 0
         self.initUI()
 
     def initUI(self):
         """ initialise the UI with the properties below"""
-        # self.setGeometry(400, 400, 600, 400)
+        self.setGeometry(400, 400, 500, 300)
         self.setWindowTitle('Shiny Pokemon Simulator')
         self.setWindowIcon(QIcon('res/pokeball_favicon.png'))
 
-        # self.fish_init()
-        # self.RE_init()
+        # set layouts
+        # main layout will be vertical, with sub horizontal layouts within
 
-        # the layouts and functions are generated in another file, call them here
-        self.fish_ui = gen_ui.CumGrid('fish')
-        self.RE_ui = gen_ui.CumGrid('RE')
+        vbox = QVBoxLayout()
+        self.setLayout(vbox)
 
-        """ GRIDS """
-        # lets play with some layouts!
-        # ok, so lets see if this works. have a main hbox with grids in each segment
+        checkbox_hbox = QHBoxLayout()
+        shiny_charm_chk = QCheckBox("Shiny Charm", self)
+        masuda_chk = QCheckBox("Masuda Method", self)
 
-        #  |'''''|'''''|
-        #  |     |     |
-        #  |-----|-----|
-        #  |     |     |
-        #  |.....|.....|
-        #
-        # sort of ike this
+        shiny_charm_chk.stateChanged.connect(self.update_shiny_charm)
+        masuda_chk.stateChanged.connect(self.update_masuda)
 
-        # how would I implement?
-        # create hbox
-        # self.addLayout(hbox)
-        # hbox.addLayout(grid_1, 2 ....)
+        checkbox_hbox.addWidget(shiny_charm_chk)
+        checkbox_hbox.addWidget(masuda_chk)
 
-        hbox = QHBoxLayout()
-        hbox.addStretch(1)
+        calculation_hbox_1 = QHBoxLayout()  # contains RE and fish
+        calculation_hbox_2 = QHBoxLayout()  # contains egg and horde
+        calculation_hbox_3 = QHBoxLayout()  # contains SOS and DexNav
 
+        vbox.addLayout(checkbox_hbox)
+        vbox.addLayout(calculation_hbox_1)
+        vbox.addLayout(calculation_hbox_2)
+        vbox.addLayout(calculation_hbox_3)
 
-        fish_grid = QGridLayout()
-        fish_grid.setSpacing(10)  # sets margins between elements
+        # create the grid layouts
+        self.fish_grid = gen_ui.CumGrid('fish')
+        self.RE_grid = gen_ui.CumGrid('RE')
+        self.horde_grid = gen_ui.CumGrid('horde')
+        self.egg_grid = gen_ui.CumGrid('egg')
+        self.SOS_grid = gen_ui.CumGrid('SOS')
+        self.dex_grid = gen_ui.CumGrid('dex')
 
-        RE_grid = QGridLayout()
-        RE_grid.setSpacing(10)
+        calculation_hbox_1.addLayout(self.fish_grid.grid)
+        calculation_hbox_1.addLayout(self.RE_grid.grid)
+        calculation_hbox_2.addLayout(self.horde_grid.grid)
+        calculation_hbox_2.addLayout(self.egg_grid.grid)
+        calculation_hbox_3.addLayout(self.SOS_grid.grid)
+        calculation_hbox_3.addLayout(self.dex_grid.grid)
 
-        hbox.addLayout(fish_grid)
-        hbox.addLayout(RE_grid)
+        self.update()
 
-        # CHAIN FISHING
-        fish_grid.addWidget(self.fish_ui.title, 0, 0)
-        fish_grid.addWidget(self.fish_ui.counter_label, 1, 0)
-        fish_grid.addWidget(self.fish_ui.counter_text, 1, 1)
-        fish_grid.addWidget(self.fish_ui.inc_btn, 1, 2)
-        fish_grid.addWidget(self.fish_ui.chance_lb, 2, 1)
-        fish_grid.addWidget(self.fish_ui.cum_chance_text, 2, 2)
-
-        # RANDOM ENCOUNTERS
-
-        RE_grid.addWidget(self.RE_ui.title, 0, 0)
-        RE_grid.addWidget(self.RE_ui.counter_label, 1, 0)
-        RE_grid.addWidget(self.RE_ui.counter_text, 1, 1)
-        RE_grid.addWidget(self.RE_ui.inc_btn, 1, 2)
-        RE_grid.addWidget(self.RE_ui.chance_lb, 2, 1)
-        RE_grid.addWidget(self.RE_ui.cum_chance_text, 2, 2)
-
-        self.RE_ui.update_chance()
-        self.fish_ui.update_chance()
-
-        self.setLayout(hbox)
         self.show()
 
+    def update_shiny_charm(self, sc_chk):
+
+        if sc_chk == Qt.Checked:
+            self.RE_grid.sc = True
+            self.fish_grid.sc = True
+            self.horde_grid.sc = True
+            self.egg_grid.sc = True
+        else:
+            self.RE_grid.sc = False
+            self.fish_grid.sc = False
+            self.horde_grid.sc = False
+            self.egg_grid.sc = False
+
+        self.update()
+
+    def update_masuda(self, mm_chk):
+        if mm_chk == Qt.Checked:
+            self.egg_grid.mm = True
+        else:
+            self.egg_grid.mm = False
+
+        self.update()
+
+
+    def update(self):
+
+        self.RE_grid.update_chance()
+        self.fish_grid.update_chance()
+        self.horde_grid.update_chance()
+        self.egg_grid.update_chance()
 
 def run():
     app = QApplication(sys.argv)

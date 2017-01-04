@@ -1,3 +1,4 @@
+from PyQt5.QtWidgets import QGridLayout
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QSizePolicy
@@ -9,6 +10,12 @@ import calc.chance as ch
 class CumGrid:
 
     def __init__(self, e):
+
+        self.grid = QGridLayout()
+        self.grid.setSpacing(10)
+        self.sc = False  # shiny charm
+        self.mm = False  # masuda
+
         self.encounter = e
         self.chance = 0
         self.counter = 0  # in the future - have this load from a json file
@@ -19,19 +26,43 @@ class CumGrid:
 
         # set titles and info
         self.counter_label = QLabel("counter")
-        self.chance_lb = QLabel("Cum. Shiny Chance:")
+        self.chance_lb = QLabel("Chance:")
 
         self.inc_btn = QPushButton("+")
         self.inc_btn.clicked.connect(self.increase_counter)
+        self.inc_btn.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         self.cum_chance_text = QTextEdit("{:.2f}".format(self.chance))
         self.cum_chance_text.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.cum_chance_text.setReadOnly(True)
 
-        if self.encounter == 'fish':
-            self.title = QLabel("Chain Fishing")
-        elif self.encounter == 'RE':
-            self.title = QLabel("Random Encounters")
+        self.set_title()
 
+        self.set_grid()
+
+    def set_grid(self):
+
+        self.grid.addWidget(self.title, 0, 0)
+        self.grid.addWidget(self.counter_label, 1, 0)
+        self.grid.addWidget(self.counter_text, 1, 1)
+        self.grid.addWidget(self.inc_btn, 1, 2)
+        self.grid.addWidget(self.chance_lb, 2, 1)
+        self.grid.addWidget(self.cum_chance_text, 2, 2)
+
+    def set_title(self):
+        title = None
+        if self.encounter == 'fish':
+            title = "Chain Fishing"
+        elif self.encounter == 'RE':
+            title = "Random Encounters"
+        elif self.encounter == 'horde':
+            title = "Horde Encounters"
+        elif self.encounter == 'egg':
+            title = "Hatched Eggs"
+        elif self.encounter == 'SOS':
+            title = "SOS"
+        elif self.encounter == 'dex':
+            title = "DexNav"
+        self.title = QLabel(title)
 
     def increase_counter(self):
         self.counter += 1
@@ -41,11 +72,18 @@ class CumGrid:
         # should also then save this counter value to a json file
 
     def update_chance(self):
-
         if self.encounter == 'fish':
-            chance = ch.fishing(self.counter)
+            chance = ch.fishing(self.counter, shiny_charm=self.sc)
         elif self.encounter == 'RE':
-            chance = ch.random_encounter(self.counter)
+            chance = ch.random(self.counter, shiny_charm=self.sc)
+        elif self.encounter == 'horde':
+            chance = ch.horde(self.counter, shiny_charm=self.sc)
+        elif self.encounter == 'egg':
+            chance = ch.egg(self.counter, shiny_charm=self.sc, masuda=self.mm)
+        elif self.encounter == 'SOS':
+            chance = ch.egg(self.counter, shiny_charm=self.sc)
+        elif self.encounter == 'dex':
+            chance = ch.egg(self.counter, shiny_charm=self.sc)
 
         self.cum_chance_text.setText("{:.2f}%".format(chance * 100))
 

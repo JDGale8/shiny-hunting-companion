@@ -10,7 +10,7 @@ def cum_bin_choice(c, n, m=1):
     return 1 - cum_chance
 
 
-def random_encounter(n, successes=1, generation=7, friend_safari=False, shiny_charm=False):
+def random(n, successes=1, generation=7, friend_safari=False, shiny_charm=False):
     base = 1 + 2*shiny_charm
 
     if generation >= 6:
