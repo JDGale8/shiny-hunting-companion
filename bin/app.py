@@ -18,7 +18,6 @@ from PyQt5.QtWidgets import QTextEdit
 from PyQt5.QtWidgets import QWidget
 import bin.chance as ch
 
-
 class TestGUI(QWidget):
     def __init__(self):
         super().__init__()
@@ -174,8 +173,6 @@ class TestGUI(QWidget):
         self.RE_chance_amount.setText("{:.2f}%".format(chance * 100))
 
 
-if __name__ == '__main__':
+def run():
     app = QApplication(sys.argv)
-
-    instance = TestGUI()
-    sys.exit(app.exec_())
+    return app
