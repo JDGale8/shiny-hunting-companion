@@ -6,10 +6,12 @@ I want to have a single counter that when I click on it, it updates some text, a
 
 """
 import sys
+
 from PyQt5.QtGui import QIcon
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QGridLayout
+from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QTextEdit
@@ -37,33 +39,56 @@ class TestGUI(QWidget):
         self.RE_init()
 
         """ GRIDS """
+        # lets play with some layouts!
+        # ok, so lets see if this works. have a main hbox with grids in each segment
 
-        grid = QGridLayout()
-        grid.setSpacing(5)
+        #  |'''''|'''''|
+        #  |     |     |
+        #  |-----|-----|
+        #  |     |     |
+        #  |.....|.....|
+        #
+        # sort of ike this
 
-        # set grid initial positions for relative movement
+        # how would I implement?
+        # create hbox
+        # self.addLayout(hbox)
+        # hbox.addLayout(grid_1, 2 ....)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(1)
+
+
+        fish_grid = QGridLayout()
+        fish_grid.setSpacing(10) # sets margins between elements
+
+        RE_grid = QGridLayout()
+        RE_grid.setSpacing(10)
+
+        hbox.addLayout(fish_grid)
+        hbox.addLayout(RE_grid)
 
         # CHAIN FISHING
-        grid.addWidget(self.fish_title, 0, 0)
-        grid.addWidget(self.fish_counter_label, 1, 0)
-        grid.addWidget(self.fish_counter_disp, 1, 1)
-        grid.addWidget(self.fish_inc_btn, 1, 2)
-        grid.addWidget(self.fish_chance_lb, 2, 1)
-        grid.addWidget(self.fish_chance_amount, 2, 2)
+        fish_grid.addWidget(self.fish_title, 0, 0)
+        fish_grid.addWidget(self.fish_counter_label, 1, 0)
+        fish_grid.addWidget(self.fish_counter_disp, 1, 1)
+        fish_grid.addWidget(self.fish_inc_btn, 1, 2)
+        fish_grid.addWidget(self.fish_chance_lb, 2, 1)
+        fish_grid.addWidget(self.fish_chance_amount, 2, 2)
 
         # RANDOM ENCOUNTERS
 
-        grid.addWidget(self.RE_title, 0, 0)
-        grid.addWidget(self.RE_counter_label, 1, 0)
-        grid.addWidget(self.RE_counter_disp, 1, 1)
-        grid.addWidget(self.RE_inc_btn, 1, 2)
-        grid.addWidget(self.RE_chance_lb, 2, 1)
-        grid.addWidget(self.RE_chance_amount, 2, 2)
+        RE_grid.addWidget(self.RE_title, 0, 0)
+        RE_grid.addWidget(self.RE_counter_label, 1, 0)
+        RE_grid.addWidget(self.RE_counter_disp, 1, 1)
+        RE_grid.addWidget(self.RE_inc_btn, 1, 2)
+        RE_grid.addWidget(self.RE_chance_lb, 2, 1)
+        RE_grid.addWidget(self.RE_chance_amount, 2, 2)
 
         self.fish_update_chance()
         self.RE_update_chance()
 
-        self.setLayout(grid)
+        self.setLayout(hbox)
         self.show()
 
     """ INITIALIZE ATTRIBUTES """
@@ -100,6 +125,8 @@ class TestGUI(QWidget):
         self.RE_inc_btn = QPushButton("+")
         self.RE_inc_btn.clicked.connect(self.RE_increase_counter)
 
+    # FISHING #
+
     def fish_increase_counter(self):
         self.fish_counter += 1
         self.fish_counter_disp.setText(str(self.fish_counter))
@@ -121,6 +148,8 @@ class TestGUI(QWidget):
 
         self.fish_counter = entry
         self.fish_update_chance()
+
+    # RANDOM ENCOUNTER #
 
     def RE_set_chain(self):
         entry = self.RE_counter_disp.toPlainText()
