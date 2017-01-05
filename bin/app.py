@@ -101,33 +101,33 @@ class ShinyGUI(QWidget):
 
         # CHECKBOXES #
 
-        shiny_charm_chk = QCheckBox("Shiny Charm", self)
-        masuda_meth_chk = QCheckBox("Masuda Method", self)
-        checkbox_hbox.addWidget(shiny_charm_chk)
-        checkbox_hbox.addWidget(masuda_meth_chk)
+        self.shiny_charm_chk = QCheckBox("Shiny Charm", self)
+        self.masuda_meth_chk = QCheckBox("Masuda Method", self)
+        checkbox_hbox.addWidget(self.shiny_charm_chk)
+        checkbox_hbox.addWidget(self.masuda_meth_chk)
 
-        shiny_charm_chk.stateChanged.connect(self.update_shiny_charm)
-        masuda_meth_chk.stateChanged.connect(self.update_masuda)
+        self.shiny_charm_chk.stateChanged.connect(self.update_shiny_charm)
+        self.masuda_meth_chk.stateChanged.connect(self.update_masuda)
 
         # RADIO BUTTONS #
 
-        fish_radio = QRadioButton("Chain Fishing", self)
-        RE_radio = QRadioButton("Rand. Ecounters", self)
-        horde_radio = QRadioButton("Horde", self)
-        egg_radio = QRadioButton("Eggs", self)
-        SOS_radio = QRadioButton("SOS", self)
-        dex_radio = QRadioButton("DexNav", self)
+        self.fish_radio = QRadioButton("Chain Fishing", self)
+        self.RE_radio = QRadioButton("Rand. Ecounters", self)
+        self.horde_radio = QRadioButton("Horde", self)
+        self.egg_radio = QRadioButton("Eggs", self)
+        self.SOS_radio = QRadioButton("SOS", self)
+        self.dex_radio = QRadioButton("DexNav", self)
 
         sim_tab = QWidget()
         vbox = QVBoxLayout(sim_tab)
 
         radio_hbox = QHBoxLayout()
-        radio_hbox.addWidget(fish_radio)
-        radio_hbox.addWidget(RE_radio)
-        radio_hbox.addWidget(horde_radio)
-        radio_hbox.addWidget(egg_radio)
-        radio_hbox.addWidget(SOS_radio)
-        radio_hbox.addWidget(dex_radio)
+        radio_hbox.addWidget(self.fish_radio)
+        radio_hbox.addWidget(self.RE_radio)
+        radio_hbox.addWidget(self.horde_radio)
+        radio_hbox.addWidget(self.egg_radio)
+        radio_hbox.addWidget(self.SOS_radio)
+        radio_hbox.addWidget(self.dex_radio)
 
         vbox.addLayout(checkbox_hbox)
         vbox.addLayout(radio_hbox)
@@ -160,9 +160,23 @@ class ShinyGUI(QWidget):
 
     def run_simulation(self):
         # try for random encounters first then add other options
+        result = "Press \'Run\' to run a simulation..."  # default entry
 
-        simulation = sim.Simulation()
-        result = simulation.random_encounter(self.counter)
+        simulation = sim.Simulation(self.shiny_charm_chk.isChecked(), self.masuda_meth_chk.isChecked())
+        if self.fish_radio.isChecked():
+            result = simulation.shiny_fish(self.counter)
+        if self.RE_radio.isChecked():
+            result = simulation.random_encounter(self.counter)
+        if self.horde_radio.isChecked():
+            result = simulation.horde_encounter(self.counter)
+        if self.egg_radio.isChecked():
+            result = simulation.shiny_eggs(self.counter)
+        if self.SOS_radio.isChecked():
+            result = simulation.SOS(self.counter)
+        if self.dex_radio.isChecked():
+            result = simulation.dex_nav(self.counter)
+
+
         self.simulation_results.setText(str(result))
 
     def set_chain(self):
@@ -178,6 +192,7 @@ class ShinyGUI(QWidget):
     def update_shiny_charm(self, sc_chk):
 
         if sc_chk == Qt.Checked:
+            self.sc = True
             self.RE_cum_grid.sc = True
             self.fish_cum_grid.sc = True
             self.horde_cum_grid.sc = True
@@ -185,6 +200,7 @@ class ShinyGUI(QWidget):
             self.SOS_cum_grid.sc = True
             self.dex_cum_grid.sc = True
         else:
+            self.sc = False
             self.RE_cum_grid.sc = False
             self.fish_cum_grid.sc = False
             self.horde_cum_grid.sc = False
@@ -197,7 +213,9 @@ class ShinyGUI(QWidget):
     def update_masuda(self, mm_chk):
         if mm_chk == Qt.Checked:
             self.egg_cum_grid.mm = True
+            self.mm = True
         else:
+            self.mm = False
             self.egg_cum_grid.mm = False
 
         self.update()

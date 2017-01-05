@@ -9,14 +9,13 @@ def plural(number):
 
 class Simulation:
 
-    def __init__(self):
-        self.shiny_charm = False
-        self.masuda = False
+    def __init__(self, sc, mm):
+        self.shiny_charm = sc
+        self.masuda = mm
 
     def shiny_eggs(self, n_eggs, successes=1):
-        masuda = True
 
-        shiny_chance = (1 + 5*masuda + self.shiny_charm)/4096
+        shiny_chance = (1 + 5*self.masuda + self.shiny_charm)/4096
 
         shiny_eggs = []
         for i in range(n_eggs):
@@ -24,12 +23,18 @@ class Simulation:
             if chance < shiny_chance:
                 shiny_eggs.append(i)
 
-        cum_chance = ch.egg(n_eggs, masuda=masuda, shiny_charm=self.shiny_charm, successes=successes)
+        cum_chance = ch.egg(n_eggs, masuda=self.masuda, shiny_charm=self.shiny_charm, successes=successes)
 
-        print("In {} eggs you received {} shiny pokemon.".format(n_eggs, len(shiny_eggs)))
-        if len(shiny_eggs) >0:
-            print("They were in the following eggs: {}. ".format(shiny_eggs))
-        print("There was a {:.2f}% chance of finding {} shiny egg{}".format(cum_chance*100, successes, plural(successes)))
+        message = "In {} eggs you received {} shiny pokemon.".format(n_eggs, len(shiny_eggs))
+        discovery = "They were in the following resets: {}. ".format(shiny_eggs)
+        if len(shiny_eggs) > 0:
+            message = message + "\n " + discovery
+
+        chance_str = "There was a {:.2f}% chance of finding {} shiny pokemon{}"\
+            .format(cum_chance*100, successes, plural(successes))
+        message = message + "\n" + chance_str
+
+        return message
 
     @staticmethod
     def shiny_starter(no_of_sr, successes=1, generation=7):
@@ -52,11 +57,16 @@ class Simulation:
 
         cum_chance = ch.starter(no_of_sr, generation=generation)
 
-        print("In {} eggs you received {} shiny pokemon.".format(no_of_sr, len(shiny_pokemon)))
+        message = "In {} resets you received {} shiny pokemon.".format(no_of_sr, len(shiny_pokemon))
+        discovery = "They were in the following resets: {}. ".format(shiny_pokemon)
         if len(shiny_pokemon) > 0:
-            print("They were in the following resets: {}. ".format(shiny_pokemon))
-        print("There was a {:.2f}% chance of finding {} shiny starter{}"
-              .format(cum_chance*100, successes, plural(successes)))
+            message = message + "\n " + discovery
+
+        chance_str = "There was a {:.2f}% chance of finding {} shiny starter{}"\
+            .format(cum_chance*100, successes, plural(successes))
+        message = message + "\n" + chance_str
+
+        return message
 
     def shiny_fish(self, fishing_chain):
         chain = 1
@@ -73,8 +83,8 @@ class Simulation:
                 shiny_fish.append(i)
             chain += 1
 
-        print("In a chain of {}, you received {} shiny pokemon. They were in the following reels: {}"
-              .format(fishing_chain, len(shiny_fish),shiny_fish))
+        return "In a chain of {}, you received {} shiny pokemon. They were in the following reels: {}"\
+            .format(fishing_chain, len(shiny_fish),shiny_fish)
 
     def random_encounter(self, number_of_encounters, friend_safari=False):
 
@@ -103,5 +113,34 @@ class Simulation:
             if chance < shiny_chance:
                 shiny_encounters.append(i)
 
-        print("In {} encounters you received {} shiny pokemon. They were in the following encounters: {}"
-              .format(number_of_encounters, len(shiny_encounters), shiny_encounters))
+        return "In {} encounters you received {} shiny pokemon. They were in the following encounters: {}"\
+            .format(number_of_encounters, len(shiny_encounters), shiny_encounters)
+
+    def SOS(self, n):
+
+        shiny_encounters = []
+
+        chain = 20 if n > 20 else n
+
+        base = 1 + 2 * self.shiny_charm + 2 * chain
+
+        shiny_chance = (1 - ((4095 / 4096) ** base))
+        for i in range(n):
+            chance = random.random()
+            if chance < shiny_chance:
+                shiny_encounters.append(i)
+
+        return "In {} encounters you received {} shiny pokemon. They were in the following encounters: {}"\
+            .format(n, len(shiny_encounters), shiny_encounters)
+
+    def dex_nav(self, n):
+
+        shiny_encounters = []
+        shiny_chance = 1 / 308
+        for i in range(n):
+            chance = random.random()
+            if chance < shiny_chance:
+                shiny_encounters.append(i)
+
+        return "In {} encounters you received {} shiny pokemon. They were in the following encounters: {}"\
+            .format(n, len(shiny_encounters), shiny_encounters)
