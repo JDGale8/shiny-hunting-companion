@@ -137,14 +137,19 @@ class ShinyGUI(QWidget):
         # quick simulation buttons - maybe?
 
         self.counter_text = QLineEdit(str(self.counter))
+        self.counter_text.setAlignment(Qt.AlignRight)
+        self.counter_text.setMaximumWidth(40)
         self.counter_text.textChanged.connect(self.set_chain)  # deals with non integer entries
 
         self.simulation_results = QLabel("Press \'Run\' to run a simulation...")
         self.simulation_results.wordWrap()
+        self.simulation_results.setAlignment(Qt.AlignTop)
         self.run_btn = QPushButton("Run")
+        self.run_btn.setMaximumWidth(50)
         self.run_btn.clicked.connect(self.run_simulation)
 
         controls_hbox = QHBoxLayout()
+        controls_hbox.addStretch(1)
         controls_hbox.addWidget(self.counter_text)
         controls_hbox.addWidget(self.run_btn)
         vbox.addLayout(controls_hbox)

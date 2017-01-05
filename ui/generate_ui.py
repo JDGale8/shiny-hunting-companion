@@ -1,3 +1,4 @@
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QGridLayout
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QLabel
@@ -6,6 +7,7 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QSizePolicy
 from PyQt5.QtWidgets import QTextEdit
 from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtCore import Qt
 
 import calc.chance as ch
 import calc.shiny_sim as sim
@@ -25,17 +27,21 @@ class CumGrid:
         self.counter = 0  # in the future - have this load from a json file
 
         self.counter_text = QLineEdit(str(self.counter))
+        self.counter_text.setMaximumWidth(70)
         self.counter_text.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.counter_text.textChanged.connect(self.set_chain)  # if it changes, change chain too
 
         # set titles and info
-        self.counter_label = QLabel("counter")
+        self.counter_label = QLabel("Counter")
+        self.counter_label.setAlignment(Qt.AlignRight)
         self.chance_lb = QLabel("Chance:")
 
         self.inc_btn = QPushButton("+")
         self.inc_btn.clicked.connect(self.increase_counter)
+        self.inc_btn.setMaximumWidth(70)
         self.inc_btn.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         self.cum_chance_text = QLineEdit("{:.2f}".format(self.chance))
+        self.cum_chance_text.setMaximumWidth(70)
         self.cum_chance_text.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.cum_chance_text.setReadOnly(True)
 
@@ -68,6 +74,10 @@ class CumGrid:
             title = "DexNav"
 
         self.title = QLabel(title)
+
+        title_font = QFont()
+        title_font.setBold(True)
+        self.title.setFont(title_font)
 
     def increase_counter(self):
         self.counter += 1
