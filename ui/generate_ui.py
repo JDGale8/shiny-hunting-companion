@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QSizePolicy
 from PyQt5.QtWidgets import QTextEdit
+from PyQt5.QtWidgets import QVBoxLayout
 
 import calc.chance as ch
 
@@ -62,6 +63,7 @@ class CumGrid:
             title = "SOS"
         elif self.encounter == 'dex':
             title = "DexNav"
+
         self.title = QLabel(title)
 
     def increase_counter(self):
@@ -96,3 +98,21 @@ class CumGrid:
 
         self.counter = entry
         self.update_chance()
+
+
+class sim_ui:
+
+    def __init__(self):
+        self.grid = QVBoxLayout()
+        self.grid.setSpacing(10)
+
+        self.sc = False  # shiny charm
+        self.mm = False  # masuda
+
+        self.counter = 0  # in the future - have this load from a json file
+
+        # quick simulation buttons - maybe?
+
+        self.counter_text = QTextEdit(str(self.counter))
+        self.counter_text.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.counter_text.textChanged.connect(self.set_chain)  # if it changes, change chain too
