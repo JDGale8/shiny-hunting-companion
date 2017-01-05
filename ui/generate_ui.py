@@ -1,11 +1,14 @@
 from PyQt5.QtWidgets import QGridLayout
+from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QSizePolicy
 from PyQt5.QtWidgets import QTextEdit
 from PyQt5.QtWidgets import QVBoxLayout
 
 import calc.chance as ch
+import calc.shiny_sim as sim
 
 
 class CumGrid:
@@ -21,7 +24,7 @@ class CumGrid:
         self.chance = 0
         self.counter = 0  # in the future - have this load from a json file
 
-        self.counter_text = QTextEdit(str(self.counter))
+        self.counter_text = QLineEdit(str(self.counter))
         self.counter_text.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.counter_text.textChanged.connect(self.set_chain)  # if it changes, change chain too
 
@@ -32,7 +35,7 @@ class CumGrid:
         self.inc_btn = QPushButton("+")
         self.inc_btn.clicked.connect(self.increase_counter)
         self.inc_btn.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-        self.cum_chance_text = QTextEdit("{:.2f}".format(self.chance))
+        self.cum_chance_text = QLineEdit("{:.2f}".format(self.chance))
         self.cum_chance_text.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.cum_chance_text.setReadOnly(True)
 
@@ -83,14 +86,14 @@ class CumGrid:
         elif self.encounter == 'egg':
             chance = ch.egg(self.counter, shiny_charm=self.sc, masuda=self.mm)
         elif self.encounter == 'SOS':
-            chance = ch.egg(self.counter, shiny_charm=self.sc)
+            chance = ch.SOS(self.counter, shiny_charm=self.sc)
         elif self.encounter == 'dex':
-            chance = ch.egg(self.counter, shiny_charm=self.sc)
+            chance = ch.dex_nav(self.counter, shiny_charm=self.sc)
 
         self.cum_chance_text.setText("{:.2f}%".format(chance * 100))
 
     def set_chain(self):
-        entry = self.counter_text.toPlainText()
+        entry = self.counter_text.text()
         try:
             entry = int(entry)
         except ValueError:
@@ -100,7 +103,7 @@ class CumGrid:
         self.update_chance()
 
 
-class sim_ui:
+class SimUI:
 
     def __init__(self):
         self.grid = QVBoxLayout()
@@ -113,6 +116,32 @@ class sim_ui:
 
         # quick simulation buttons - maybe?
 
-        self.counter_text = QTextEdit(str(self.counter))
-        self.counter_text.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        self.counter_text.textChanged.connect(self.set_chain)  # if it changes, change chain too
+        self.counter_text = QLineEdit(str(self.counter))
+        self.counter_text.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
+        self.counter_text.textChanged.connect(self.set_chain)  # deals with non integer entries
+
+        self.simulation_results = QLabel("Press \'Run\' to run a simulation...")
+        self.run_btn = QPushButton("Run")
+        self.run_btn.clicked.connect(self.run_simulation)
+
+        controls_hbox = QHBoxLayout()
+        controls_hbox.addWidget(self.counter_text)
+        controls_hbox.addWidget(self.run_btn)
+
+        self.grid.addLayout(controls_hbox)
+        self.grid.addWidget(self.simulation_results)
+
+    def set_chain(self):
+        entry = self.counter_text.toPlainText()
+        try:
+            entry = int(entry)
+        except ValueError:
+            entry = 0
+
+        self.counter = entry
+
+    def run_simulation(self):
+        # try for random encounters first then add other options
+
+        # result = sim.random(self.counter)
+        self.simulation_results.setText("asdasd")

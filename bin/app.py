@@ -11,6 +11,9 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QRadioButton
 from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtWidgets import QVBoxLayout
@@ -18,7 +21,7 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QCheckBox
 
 import ui.generate_ui as gen_ui
-
+import calc.shiny_sim as sim
 
 class ShinyGUI(QWidget):
     def __init__(self):
@@ -75,15 +78,15 @@ class ShinyGUI(QWidget):
         self.RE_cum_grid = gen_ui.CumGrid('RE')
         self.horde_cum_grid = gen_ui.CumGrid('horde')
         self.egg_cum_grid = gen_ui.CumGrid('egg')
-        self.SOS_grid = gen_ui.CumGrid('SOS')
-        self.dex_grid = gen_ui.CumGrid('dex')
+        self.SOS_cum_grid = gen_ui.CumGrid('SOS')
+        self.dex_cum_grid = gen_ui.CumGrid('dex')
 
         calculation_hbox_1.addLayout(self.fish_cum_grid.grid)
         calculation_hbox_1.addLayout(self.RE_cum_grid.grid)
         calculation_hbox_2.addLayout(self.horde_cum_grid.grid)
         calculation_hbox_2.addLayout(self.egg_cum_grid.grid)
-        calculation_hbox_3.addLayout(self.SOS_grid.grid)
-        calculation_hbox_3.addLayout(self.dex_grid.grid)
+        calculation_hbox_3.addLayout(self.SOS_cum_grid.grid)
+        calculation_hbox_3.addLayout(self.dex_cum_grid.grid)
 
         vbox.addLayout(checkbox_hbox)
         vbox.addLayout(calculation_hbox_1)
@@ -129,9 +132,42 @@ class ShinyGUI(QWidget):
         vbox.addLayout(checkbox_hbox)
         vbox.addLayout(radio_hbox)
 
+        self.counter = 0  # in the future - have this load from a json file
+
+        # quick simulation buttons - maybe?
+
+        self.counter_text = QLineEdit(str(self.counter))
+        self.counter_text.textChanged.connect(self.set_chain)  # deals with non integer entries
+
+        self.simulation_results = QLabel("Press \'Run\' to run a simulation...")
+        self.simulation_results.wordWrap()
+        self.run_btn = QPushButton("Run")
+        self.run_btn.clicked.connect(self.run_simulation)
+
+        controls_hbox = QHBoxLayout()
+        controls_hbox.addWidget(self.counter_text)
+        controls_hbox.addWidget(self.run_btn)
+        vbox.addLayout(controls_hbox)
+        vbox.addWidget(self.simulation_results)
+
         return sim_tab
 
 
+    def run_simulation(self):
+        # try for random encounters first then add other options
+
+        simulation = sim.Simulation()
+        result = simulation.random_encounter(self.counter)
+        self.simulation_results.setText(str(result))
+
+    def set_chain(self):
+        entry = self.counter_text.text()
+        try:
+            entry = int(entry)
+        except ValueError:
+            entry = 0
+
+        self.counter = entry
 
 
     def update_shiny_charm(self, sc_chk):
@@ -141,11 +177,15 @@ class ShinyGUI(QWidget):
             self.fish_cum_grid.sc = True
             self.horde_cum_grid.sc = True
             self.egg_cum_grid.sc = True
+            self.SOS_cum_grid.sc = True
+            self.dex_cum_grid.sc = True
         else:
             self.RE_cum_grid.sc = False
             self.fish_cum_grid.sc = False
             self.horde_cum_grid.sc = False
             self.egg_cum_grid.sc = False
+            self.SOS_cum_grid.sc = False
+            self.dex_cum_grid.sc = False
 
         self.update()
 
@@ -163,6 +203,8 @@ class ShinyGUI(QWidget):
         self.fish_cum_grid.update_chance()
         self.horde_cum_grid.update_chance()
         self.egg_cum_grid.update_chance()
+        self.dex_cum_grid.update_chance()
+        self.SOS_cum_grid.update_chance()
 
 
 def run():

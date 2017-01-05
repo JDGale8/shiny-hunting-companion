@@ -89,8 +89,10 @@ class Simulation:
             if chance < shiny_chance:
                 shiny_encounters.append(i)
 
-        print("In {} encounters you received {} shiny pokemon. They were in the following encounters: {}"
-              .format(number_of_encounters, len(shiny_encounters),shiny_encounters))
+        message = "In {} encounters you received {} shiny pokemon. They were in the following encounters: {}"\
+            .format(number_of_encounters, len(shiny_encounters),shiny_encounters)
+
+        return message
 
     def horde_encounter(self, number_of_encounters):
         shiny_encounters = []
